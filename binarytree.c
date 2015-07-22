@@ -81,7 +81,6 @@ bool delete(struct person *person)
 			//didn't find the person in the tree :(
 			return false;
 	}
-
 	//Case One: handle node with zero children (leaf node)
 	if (current->left == NULL && current->right == NULL) {
 		if (current == root_node)
@@ -89,9 +88,7 @@ bool delete(struct person *person)
 		else if (is_left)
 			parent->left = NULL;
 		else
-			parent->left = NULL;
-
-		//TODO: free memory
+			parent->right = NULL;
 	//Case Two A: handle node with one child (right node only)
 	} else if (current->left == NULL) {
 		if (current == root_node)
