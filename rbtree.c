@@ -52,12 +52,22 @@ void rotate_right(struct node *n)
 	
 	c->right = n;
 	n->parent = c;
-
 }
 
 void rotate_left(struct node *n)
 {
-	//TODO:
+	struct node *c;
+
+	c = n->right;
+	if (n->parent == NULL)
+		rb_root = c;
+	else
+		n->parent->left = c;
+
+	c->parent = n->parent;
+	n->parent = c;
+	n->right = c->left;
+	c->left = n;
 }
 
 struct node *create_new_rb_node(int value)
@@ -79,9 +89,9 @@ struct node *create_new_rb_node(int value)
  * This handles where the parent (P) is
  * RED and the uncle (U) is BLACK or "null child"
  * and the node we are inserting (n) is a 
- * outer grand child of G (P's parent). 
+ * outside grand child of G (P's parent). 
  *
- * By defintion the outer grandparent is
+ * By definition the outside grandchild is
  * where P is the left side of G 
  * and N is the left side of the P.
  * OR
@@ -92,7 +102,7 @@ struct node *create_new_rb_node(int value)
  * I wanted it to somewhat describe what 
  * type of insert it is doing.
  */
-void pr_ub_n_outer_gc_insert(struct node *n)
+void pr_ub_n_out_gc_insert(struct node *n)
 {
 	struct node *g;
 
@@ -106,9 +116,24 @@ void pr_ub_n_outer_gc_insert(struct node *n)
 		rotate_left(g);
 }
 
+/**
+ * This handles where the parent (P) is
+ * RED and the uncle (U) is BLACK or "null child"
+ * and the node we are inserting (n) is a
+ * inside grand child of G (P's parent).
+ *
+ */
+void pr_ub_n_in_gc_insert(struct node *n)
+{
+	struct node *g;
+
+	rotate_left(n->parent);
+	pr_ub_n_out_gc_insert(n->left);
+}
+
 void insert_rb_node(struct node *n)
 {
-	struct node *c, *p, *u;
+	struct node *c, *p, *u, *g;
 	bool is_left = true;
 
 	p = c = rb_root;
@@ -142,7 +167,11 @@ void insert_rb_node(struct node *n)
 	if (p->color == RED) {
 		u = uncle(n);
 		if (u == NULL || u->color == BLACK) {
-			pr_ub_n_outer_gc_insert(n);
+			g = grandparent(n);
+			if (is_left && g->left == n->parent)
+				pr_ub_n_out_gc_insert(n);
+			else
+				pr_ub_n_in_gc_insert(n);
 		}
 	}
 }
@@ -169,13 +198,13 @@ int main(int argv, char *argc[])
 {
 	struct node *n1, *n2, *n3;
 
-	n1 = create_new_rb_node(3);
+	n1 = create_new_rb_node(5);
 	insert_rb_node(n1);
 
-	n2 = create_new_rb_node(2);
+	n2 = create_new_rb_node(3);
 	insert_rb_node(n2);
 
-	n3 = create_new_rb_node(1);
+	n3 = create_new_rb_node(4);
 	insert_rb_node(n3);
 
 	traverse_in_order(rb_root);
