@@ -70,19 +70,14 @@ void rotate_left(struct node *n)
 	c->left = n;
 }
 
-struct node *create_new_rb_node(int value)
+void create_new_rb_node(struct node **node, int value)
 {
-	struct node *n;
-       
-	n = (struct node *)malloc(sizeof(*n));
-	if (n == NULL) {
+	*node = (struct node *)malloc(sizeof(**node));
+	if (*node == NULL) {
 		printf("Failed to create new rb node\n");
-		return NULL;
 	}
-	n->color = RED;
-	n->value = value;
-
-	return n;
+	(*node)->color = RED;
+	(*node)->value = value;
 }
 
 /*
@@ -198,13 +193,13 @@ int main(int argv, char *argc[])
 {
 	struct node *n1, *n2, *n3;
 
-	n1 = create_new_rb_node(5);
+	create_new_rb_node(&n1, 5);
 	insert_rb_node(n1);
 
-	n2 = create_new_rb_node(3);
+	create_new_rb_node(&n2, 3);
 	insert_rb_node(n2);
 
-	n3 = create_new_rb_node(4);
+	create_new_rb_node(&n3, 4);
 	insert_rb_node(n3);
 
 	traverse_in_order(rb_root);
