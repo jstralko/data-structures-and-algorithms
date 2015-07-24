@@ -5,7 +5,7 @@
 
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 /**
- * Found this marco in the linux kernel.
+ * Found this macro in the linux kernel.
  * container_of - cast a member of a structure out to the containing structure
  * 	@ptr:	the pointer to the member.
  * 	@type:	the type of the container struct this is embedded in.
