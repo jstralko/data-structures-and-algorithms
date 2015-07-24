@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 enum node_color { RED, BLACK };
 
@@ -56,9 +57,69 @@ void init_rb_tree(int value)
 	rb_root->value = value;
 }
 
+/*
+ * This handles where the parent (P) is
+ * RED and the uncle (U) is BLACK or "null child"
+ * and the node we are inserting (n) is a 
+ * outer grand child of G (P's parent). 
+ *
+ * By defintion the outer grandparent is
+ * where P is the left side of G 
+ * and N is the left side of the P.
+ * OR
+ * where P is right side of G and
+ * n is the right side of the P.
+ *
+ * This function name is pretty lame, but 
+ * I wanted it to somewhat describe what 
+ * type of insert it is doing.
+ */
+void pr_ub_n_outer_gc_insert(struct node *n)
+{
+
+}
+
+void insert_rb_node(struct node *n)
+{
+	struct node *c, *p, *u;
+	bool is_left = true;
+
+	p = c = rb_root;
+	while (c != NULL) {
+		p = c;
+		if (c->value > n->value) {
+			c = c->left;
+			is_left = true;
+		} else {
+			c = c->right;
+			is_left = false;
+		}
+	}
+
+	n->parent = p;
+	if (is_left)
+		p->left = n;
+	else
+		p->right = n;
+
+	if (p->color == RED) {
+		u = uncle(n);
+		if (u == NULL || u->color == BLACK) {
+			pr_ub_n_outer_gc_insert(n);
+		}
+	}
+
+
+}
+
 int main(int argv, char *argc[])
 {
+	struct node *n1;
+
 	init_rb_tree(1);
+
+	n1 = create_new_rb_node(2);
+	insert_rb_node(n1);
 
 	return 0;
 }
