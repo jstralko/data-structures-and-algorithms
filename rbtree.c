@@ -1,3 +1,8 @@
+/**
+ * Red-Black Tree Implementation 
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -33,6 +38,28 @@ struct node *uncle(struct node *n)
 	return g->left;
 }
 
+void rotate_right(struct node *n)
+{
+	struct node *c;
+
+	c = n->left;
+	if (n->parent == NULL)
+		rb_root = c;
+
+	n->left = c->right;
+	if (c->right != NULL)
+		c->right->parent = n;
+	
+	c->right = n;
+	n->parent = c;
+
+}
+
+void rotate_left(struct node *n)
+{
+	//TODO:
+}
+
 struct node *create_new_rb_node(int value)
 {
 	struct node *n;
@@ -43,18 +70,9 @@ struct node *create_new_rb_node(int value)
 		return NULL;
 	}
 	n->color = RED;
-	n->value = 1;
+	n->value = value;
 
 	return n;
-}
-
-void init_rb_tree(int value)
-{
-	rb_root = create_new_rb_node(1);
-	if (rb_root == NULL)
-		return;
-	rb_root->color = BLACK;
-	rb_root->value = value;
 }
 
 /*
@@ -76,7 +94,16 @@ void init_rb_tree(int value)
  */
 void pr_ub_n_outer_gc_insert(struct node *n)
 {
+	struct node *g;
 
+	g = grandparent(n);
+	n->parent->color = BLACK;
+	g->color = RED;
+
+	if (n == n->parent->left)
+		rotate_right(g);
+	else
+		rotate_left(g);
 }
 
 void insert_rb_node(struct node *n)
@@ -96,6 +123,16 @@ void insert_rb_node(struct node *n)
 		}
 	}
 
+	/*
+	 * Init the rbtree with a root node. 
+	 * Remeber root node is always BLACK.
+	 */
+	if (p == NULL) {
+		n->color = BLACK;
+		rb_root = n;
+		return;
+	}
+
 	n->parent = p;
 	if (is_left)
 		p->left = n;
@@ -108,18 +145,39 @@ void insert_rb_node(struct node *n)
 			pr_ub_n_outer_gc_insert(n);
 		}
 	}
+}
 
+/*
+ * Helps in debugging what the state
+ * of the tree is after coloring and
+ * rotation.
+ */
+void traverse_in_order(struct node *n)
+{
+	if (n != NULL) {
+		traverse_in_order(n->left);
 
+		printf("%d (%s) %s\n", n->value, 
+				n->color == RED ? "Red" : "Black",
+				n == rb_root ? "Root" : "");
+
+		traverse_in_order(n->right);
+	}
 }
 
 int main(int argv, char *argc[])
 {
-	struct node *n1;
+	struct node *n1, *n2, *n3;
 
-	init_rb_tree(1);
-
-	n1 = create_new_rb_node(2);
+	n1 = create_new_rb_node(3);
 	insert_rb_node(n1);
 
+	n2 = create_new_rb_node(2);
+	insert_rb_node(n2);
+
+	n3 = create_new_rb_node(1);
+	insert_rb_node(n3);
+
+	traverse_in_order(rb_root);
 	return 0;
 }
