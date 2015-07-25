@@ -7,11 +7,11 @@
  *  2. The root is always black
  *  3. If a node is red, its child must be black (although the converse isn't
  *  necessarily true)
- *  4. Every path from the root to a leaft, or to a null child, must contain the same
+ *  4. Every path from the root to a leaf, or to a null child, must contain the same
  *  number of black nodes.  (black height).
  *
  *  If all these rules are kept, then you will have a self balancing tree with
- *  Big-0(log(n)) for insertion, deletion, search - regardless of the ordering 
+ *  Big-0(log(n)) for insertion, deletion, and searching - regardless of the order 
  *  of the data.  Fully sorted or random data the tree will always be balanced and 
  *  support Big-O(log(n)).
  */
@@ -31,6 +31,8 @@ struct node {
 };
 
 struct node *rb_root;
+
+void repaint_tree(struct node *n);
 
 struct node *grandparent(struct node *n)
 {
@@ -93,58 +95,79 @@ void create_new_rb_node(struct node **node, int value)
 	(*node)->value = value;
 }
 
-/*
- * This handles when the parent (P) is
- * RED and the uncle (U) is BLACK or a "null child"
- * and the node we are inserting (n) is a 
- * outside grand child of G (P's parent). 
- *
- * By definition the outside grandchild is
- * where P is the left side of G 
- * and N is the left side of P.
- * OR
- * where P is right side of G and
- * n is the right side of the P.
- *
- * This function name is pretty lame, but 
- * I wanted it to somewhat describe what 
- * type of insert it is doing.
- */
-void pr_ub_n_out_gc_insert(struct node *n)
+void rebalance_tree(struct node *n)
 {
 	struct node *g;
 
+	/*
+	 * Check if we are a inside grandchild
+	 *
+	 * By definition the inside grandchild is
+ 	 * where P is the left side of G 
+ 	 * and N is the right side of P.
+ 	 * OR
+ 	 * where P is right side of G and
+ 	 * n is the left side of the P.
+	 *
+	 * Visual the relationship makes a zigzag
+	 * instead of a straight line.
+	 */
+	g = grandparent(n);
+	if (n == n->parent->right && n->parent == g->left) {
+		rotate_left(n->parent);
+		n = n->left;
+	} else if (n == n->parent->left && n->parent == g->right) {
+		rotate_right(n->parent);
+		n = n->right;
+	}
+	/*
+	 * Now at this point we are either a outside grandchild
+	 * and rotated the inside grandchild to become
+	 * a outside grandchild.
+	 *
+	 * n chould have changed so get grandparent node again
+	 */
 	g = grandparent(n);
 	n->parent->color = BLACK;
 	g->color = RED;
-
 	if (n == n->parent->left)
 		rotate_right(g);
 	else
 		rotate_left(g);
 }
 
-/**
- * This handles when the parent (P) is
- * RED and the uncle (U) is BLACK or "null child"
- * and the node we are inserting (n) is a
- * inside grand child of G (P's parent).
- *
- */
-void pr_ub_n_in_gc_insert(struct node *n)
+void parent_is_red(struct node *n)
 {
-	struct node *g;
+	struct node *u, *g;
 
-	rotate_left(n->parent);
-	pr_ub_n_out_gc_insert(n->left);
+	u = uncle(n);
+	if (u != NULL && u->color == RED) {
+		g = grandparent(n);
+		
+		n->parent->color = BLACK;
+		u->color = BLACK;
+		g->color = RED;
+		
+		repaint_tree(g);
+	} else 
+		rebalance_tree(n);
 }
 
 void repaint_tree(struct node *n)
 {
+	/*
+	 * Rule 2: root is always black
+	 */
 	if (n->parent == NULL)
 		n->color = BLACK;
+	/*
+	 * The tree is still valid and n's parent 
+	 * is black and n is red.
+	 */
+	else if (n->parent->color == BLACK)
+		return;
 	else
-		printf("case not handled yet\n");
+		parent_is_red(n);
 }
 
 void insert_rb_node(struct node *n)
@@ -168,51 +191,15 @@ void insert_rb_node(struct node *n)
 		}
 	}
 
-	/*
-	 * Init the rbtree with a root node. 
-	 * Remeber root node is always BLACK.
-	 */
-	if (p == NULL) {
-		n->color = BLACK;
-		rb_root = n;
-		return;
-	}
-
 	n->parent = p;
-	if (is_left)
+	if (is_left && p != NULL)
 		p->left = n;
-	else
+	else if (p != NULL)
 		p->right = n;
+	else
+		rb_root = n;
 
-	if (p->color == RED) {
-		u = uncle(n);
-		/*
-		 * 
-		 */
-		g = grandparent(n);
-		if (u == NULL || u->color == BLACK) {
-			/*
-			 * Check if we are a outside grand child, 
-			 * either on the left or right.
-			 */
-			if ((is_left && g->left == n->parent) ||
-				(!is_left && g->right == n->parent))
-				pr_ub_n_out_gc_insert(n);
-			else
-				pr_ub_n_in_gc_insert(n);
-		} else {
-			/*
-			 * Both P and U are red.  Paint them black
-			 */
-			p->color = BLACK;
-			if (u != NULL) 
-				u->color = BLACK;
-			if (g != NULL) {
-				g->color = RED;
-				repaint_tree(g);
-			}
-		}
-	}
+	repaint_tree(n);	
 }
 
 /*
@@ -238,6 +225,7 @@ int main(int argv, char *argc[])
 	struct node *n1, *n2, *n3;
 	struct node *n4, *n5, *n6;
 	struct node *n7, *n8, *n9;
+	struct node *n10;
 
 	create_new_rb_node(&n1, 50);
 	insert_rb_node(n1);
@@ -260,11 +248,14 @@ int main(int argv, char *argc[])
 	create_new_rb_node(&n7, 6);
 	insert_rb_node(n7);
 	
-	//create_new_rb_node(&n8, 18);
-	//insert_rb_node(n8);
+	create_new_rb_node(&n8, 18);
+	insert_rb_node(n8);
 	
-	//create_new_rb_node(&n9, 62);
-	//insert_rb_node(n9)
+	create_new_rb_node(&n9, 87);
+	insert_rb_node(n9);
+	
+	create_new_rb_node(&n9, 3);
+	insert_rb_node(n9);
 
 	traverse_in_order(rb_root);
 	return 0;
