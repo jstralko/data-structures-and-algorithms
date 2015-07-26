@@ -1,8 +1,12 @@
 all:	heapsort.o radix_sort.o mergesort.o quicksort.o \
-	shellsort.o binarytree.o rbtree.o tree234.o
+	shellsort.o binarytree.o rbtree.o tree234.o \
+	heap.o
 
 heapsort.o: heapsort.c
 	clang -g -o heapsort.o heapsort.c
+
+heap.o: heap.c
+	clang -g -o heap.o heap.c
 
 radix_sort.o: radix_sort.c
 	clang -g -o radix_sort.o radix_sort.c
