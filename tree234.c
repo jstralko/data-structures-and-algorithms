@@ -62,10 +62,6 @@ int insert_into_node(struct node *n, int v)
 
 	n->num_items++;
 	for (i = n->num_items - 1; i >= 0; i--) {
-		/*
-		 * convert the array into a pointer
-		 * and see if the pointer is null
-		 */
 		if (n->items[i] == NULL)
 			continue;
 
@@ -111,6 +107,17 @@ struct node *get_next_child(struct node *n, int v)
 	return next;
 }
 
+struct data *remove_item(struct node *n)
+{
+	struct data *d;
+
+	d = n->items[n->num_items-1];
+	n->items[n->num_items - 1] = NULL;
+	n->num_items--;
+
+	return d;
+}
+
 /*
  * Probably the most complext part of the 2-3-4 tree
  * implementation.
@@ -119,6 +126,7 @@ void split(struct node *n)
 {
 	int insert_index, total_items, i;
 	struct node *new_node, *tmp;
+	struct data *item_c, *item_b;
 
 	if (n == tree_root) {
 		struct node *new_root;
@@ -128,8 +136,6 @@ void split(struct node *n)
 		new_root->children[0] = n;
 		n->parent = new_root;
 		tree_root = new_root;
-
-		insert_into_node(new_root, n->items[1]->value);
 	}
 
 	/*
@@ -149,14 +155,15 @@ void split(struct node *n)
 	 * 5. The rightmost two children are disconnected from the node 
 	 * being split and connected to the new node.
 	 */
-	create_node(&new_node);
-	insert_into_node(new_node, n->items[2]->value);
-	free(n->items[2]);
-	n->items[2] = NULL;
+	item_c = remove_item(n);
+	item_b = remove_item(n);
 
-	insert_index = insert_into_node(n->parent, n->items[1]->value);
-	free(n->items[1]);
-	n->items[1] = NULL;
+	create_node(&new_node);
+	insert_into_node(new_node, item_c->value);
+	free(item_c);
+
+	insert_index = insert_into_node(n->parent, item_b->value);
+	free(item_b);
 
 	/*
 	 * After an insert adjust the children pointers.
@@ -170,7 +177,7 @@ void split(struct node *n)
 	/*
 	 * connect the new node to the parent node.
 	 */
-	n->parent->children[insert_index] = new_node;
+	n->parent->children[insert_index+1] = new_node;
 	new_node->parent = n->parent;
 
 	/*
