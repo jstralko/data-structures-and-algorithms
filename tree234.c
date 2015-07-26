@@ -96,14 +96,14 @@ struct node *get_next_child(struct node *n, int v)
 	struct node *next;
 	int i;
 
-	for (i = 0; i < ORDER - 2; i++) {
+	for (i = 0; i < n->num_items; i++) {
 		if (v < n->items[i]->value) {
 			next = n->children[i];
 			return next;
 		}
 	}
 
-	next = n->children[ORDER-1];
+	next = n->children[n->num_items];
 	return next;
 }
 
@@ -209,14 +209,33 @@ void insert(int value)
 	
 		if (node_is_full(cur)) {
 			split(cur);
-			break;
+			cur = cur->parent;
 		} else if (node_is_leaf(cur)) {
-			insert_into_node(tree_root, value);
+			insert_into_node(cur, value);
 			break;
-		} else {
-			cur = get_next_child(cur, value);
 		}
+		cur = get_next_child(cur, value);
 	}
+}
+
+void display_tree(struct node *node, int level, int child)
+{
+	struct node *child_node;
+	int i;
+
+	printf("level=%d child=%d ", level, child);
+	for (i = 0; i < node->num_items; i++) {
+		printf("/%d", node->items[i]->value);
+	}
+	printf("/\n");
+
+	for (i = 0; i <= node->num_items; i++) {
+		child_node = node->children[i];
+		if (child_node == NULL)
+			return;
+		display_tree(child_node, level+1, i);
+	}
+
 }
 
 int main(int argv, char *argc[])
@@ -225,5 +244,9 @@ int main(int argv, char *argc[])
 	insert(40);
 	insert(60);
 	insert(30);
+	insert(70);
+	insert(20);
+
+	display_tree(tree_root, 0, 0);
 	return 0;
 }
