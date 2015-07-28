@@ -32,7 +32,7 @@ struct node {
 
 struct node *rb_root;
 
-void repaint_tree(struct node *n);
+void fix_violation(struct node *n);
 
 struct node *grandparent(struct node *n)
 {
@@ -90,6 +90,7 @@ void create_new_rb_node(struct node **node, int value)
 	*node = (struct node *)malloc(sizeof(**node));
 	if (*node == NULL) {
 		printf("Failed to create new rb node\n");
+		return;
 	}
 	(*node)->color = RED;
 	(*node)->value = value;
@@ -100,7 +101,7 @@ void rebalance_tree(struct node *n)
 	struct node *g;
 
 	/*
-	 * Check if we are a inside grandchild
+	 * Check if we are an inside grandchild
 	 *
 	 * By definition the inside grandchild is
  	 * where P is the left side of G 
@@ -109,7 +110,7 @@ void rebalance_tree(struct node *n)
  	 * where P is right side of G and
  	 * n is the left side of the P.
 	 *
-	 * Visual the relationship makes a zigzag
+	 * Visually the relationship makes a zigzag
 	 * instead of a straight line.
 	 */
 	g = grandparent(n);
@@ -122,10 +123,10 @@ void rebalance_tree(struct node *n)
 	}
 	/*
 	 * Now at this point we are either a outside grandchild
-	 * and rotated the inside grandchild to become
+	 * OR rotated the inside grandchild to become
 	 * a outside grandchild.
 	 *
-	 * n chould have changed so get grandparent node again
+	 * n could have changed so we get grandparent again.
 	 */
 	g = grandparent(n);
 	n->parent->color = BLACK;
@@ -136,7 +137,7 @@ void rebalance_tree(struct node *n)
 		rotate_left(g);
 }
 
-void parent_is_red(struct node *n)
+void recolor_node(struct node *n)
 {
 	struct node *u, *g;
 
@@ -148,12 +149,12 @@ void parent_is_red(struct node *n)
 		u->color = BLACK;
 		g->color = RED;
 		
-		repaint_tree(g);
+		fix_violation(g);
 	} else 
 		rebalance_tree(n);
 }
 
-void repaint_tree(struct node *n)
+void fix_violation(struct node *n)
 {
 	/*
 	 * Rule 2: root is always black
@@ -167,7 +168,7 @@ void repaint_tree(struct node *n)
 	else if (n->parent->color == BLACK)
 		return;
 	else
-		parent_is_red(n);
+		recolor_node(n);
 }
 
 void insert_rb_node(struct node *n)
@@ -190,7 +191,6 @@ void insert_rb_node(struct node *n)
 			is_left = false;
 		}
 	}
-
 	n->parent = p;
 	if (is_left && p != NULL)
 		p->left = n;
@@ -199,7 +199,7 @@ void insert_rb_node(struct node *n)
 	else
 		rb_root = n;
 
-	repaint_tree(n);	
+	fix_violation(n);
 }
 
 /*
