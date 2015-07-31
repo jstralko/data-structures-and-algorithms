@@ -1,6 +1,6 @@
 all:	heapsort.o radix_sort.o mergesort.o quicksort.o \
 	shellsort.o binarytree.o rbtree.o tree234.o \
-	heap.o
+	heap.o dfs.o
 
 heapsort.o: heapsort.c
 	clang -g -o heapsort.o heapsort.c
@@ -28,6 +28,9 @@ rbtree.o: rbtree.c
 
 tree234.o: tree234.c
 	clang -g -o tree234.o tree234.c
+
+dfs.o:	dfs.c
+	clang -g -o dfs.o dfs.c
 
 clean:
 	rm -rf *.o *~
