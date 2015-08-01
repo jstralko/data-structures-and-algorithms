@@ -1,6 +1,6 @@
 all:	heapsort.o radix_sort.o mergesort.o quicksort.o \
 	shellsort.o binarytree.o rbtree.o tree234.o \
-	heap.o dfs.o bfs.o topo.o
+	heap.o dfs.o bfs.o topo.o shortest_path.o
 
 heapsort.o: heapsort.c
 	clang -g -o heapsort.o heapsort.c
@@ -37,6 +37,9 @@ bfs.o:	bfs.c
 
 topo.o: topo.c
 	clang -g -o topo.o topo.c
+
+shortest_path.o: shortest_path.c
+	clang -g -o shortest_path.o shortest_path.c
 
 clean:
 	rm -rf *.o *~
