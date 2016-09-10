@@ -1,5 +1,3 @@
-Please use this Google doc to code during your interview. To free your hands for coding, we recommend that you use a headset or a phone with speaker option.
-
 interface Iterator<T> {
   boolean hasNext();
   T next();
