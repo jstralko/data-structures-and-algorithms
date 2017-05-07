@@ -47,13 +47,17 @@ void merge(int start, const int mid, const int end)
 
 void mergesort(int start, int end)
 {
-	if (start >= end) return;
+	if (start == end) return; //one item is considered sorted.
 
 	int mid = (start + end) / 2;
-
+	
 	mergesort(start, mid);
 	mergesort(mid + 1, end);
-
+	//We have 2 subarrays:
+	//	- Merge: [0] and [1] = [01]
+	//					 [12] and [34] = [1234]
+	//					 [1234] and [5678] = [12345678]
+	//					 [and so on...]
 	merge(start, mid, end);
 }
 
