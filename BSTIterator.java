@@ -10,7 +10,8 @@ import java.util.Stack;
 public class BSTIterator {
 
     static Node root;
-    static Stack<Node> stack = null;
+
+    Stack<Node> stack = null;
 
     public static void main(String[] args) {
       root = new Node();
