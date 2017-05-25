@@ -50,7 +50,7 @@ void mergesort(int start, int end)
 	if (start == end) return; //one item is considered sorted.
 
 	int mid = (start + end) / 2;
-	
+
 	mergesort(start, mid);
 	mergesort(mid + 1, end);
 	//We have 2 subarrays:
@@ -63,7 +63,7 @@ void mergesort(int start, int end)
 
 int main(int argv, char *argc[])
 {
-	mergesort(0, ARRAYSIZE(array));
+	mergesort(0, ARRAYSIZE(array) - 1);
 	print_array();
 
 	return 0;

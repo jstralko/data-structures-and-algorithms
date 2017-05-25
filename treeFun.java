@@ -48,9 +48,9 @@ public class treeFun {
 
       //calcuateHeight(root);
 
-      /*int[] arr = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+      int[] arr = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
       Node bstRootNode = createBSTFromArray(arr, 0, arr.length- 1);
-      traverse(bstRootNode);*/
+      traverse(bstRootNode);
 
       Node twenty = new Node();
       twenty.value = 20;
@@ -69,7 +69,7 @@ public class treeFun {
       twenty.right = thirty;
 
       boolean isBST = checkBST(twenty);
-      System.out.println(String.format("is BST: %b", isBST));
+      //System.out.println(String.format("is BST: %b", isBST));
 
     }
 

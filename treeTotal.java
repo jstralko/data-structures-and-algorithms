@@ -1,7 +1,8 @@
-4
-2          -10
-1   1    3      0
-
+/*
+	4
+      2   -10
+    1  1  3  0
+*/
 
 public class NodeWrapper {
   Integer max;

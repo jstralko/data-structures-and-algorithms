@@ -67,7 +67,7 @@ public class BSTIterator {
       return null;
     }
 
-    public void traverseLeft(Node node) {
+    private void traverseLeft(Node node) {
       if (node == null) return;
 
       stack.push(node);
