@@ -42,4 +42,4 @@ shortest_path.o: shortest_path.c
 	clang -g -o shortest_path.o shortest_path.c
 
 clean:
-	rm -rf *.o *~
+	rm -rf *.o *~ *.o.dSYM *.class
