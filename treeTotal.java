@@ -20,13 +20,8 @@ public static Integer setLargestSumTree(Node root, NodeWrapper maxSubTreeWrapper
   if (root == null) return 0;
 
   int total = root.value;
-  if (root.left != null) {
-    total += setLargestSumTree(root.left, maxSubTreeWrapper);
-  }
-
-  if (root.right != null) {
-    total += setLargestSumTree(root.right, maxSubTreeWrapper);
-  }
+  total += setLargestSumTree(root.left, maxSubTreeWrapper);
+  total += setLargestSumTree(root.right, maxSubTreeWrapper);
 
   if (maxSubTreeWrapper.max < total) {
     maxSubTreeWrapper.max = total;
