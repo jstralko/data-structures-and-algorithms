@@ -1,3 +1,11 @@
+/*
+ // Given two sorted lists of non-overlapping intervals, write a method that returns a single merged list 
+ // of the union of these intervals  with the same properties (sorted, non-overlapping).
+ //
+ // e.g. [[0,2], [4,5], [8,9]] , [[1,4.05], [10,11]] -> [[0,5], [8,9], [10,11]]
+ // e.g. [[0, 100]],  [[1,2], [3,4], [5,6], [7,8]] -> [[0, 100]]
+*/
+
 public class MergedTwoList_2 {
 
     public static class Range {
